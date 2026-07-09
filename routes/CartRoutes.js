@@ -1,7 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const cartController = require("../controllers/cartController");
-const { validateBody, cartItemSchema } = require("../middlewares/validate");
+const {
+  validateBody,
+  cartItemSchema,
+} = require("../middlewares/ValidateOrder");
 const verifyToken = require("../middlewares/authMiddleware"); // <-- Russell's JWT middleware
 
 router.use(verifyToken); // all cart routes require login
