@@ -1,3 +1,5 @@
+// Owner: Jusitn
+
 const paymentModel = require("../models/paymentModel");
 
 async function myPayments(req, res) {

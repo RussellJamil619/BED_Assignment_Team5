@@ -1,3 +1,5 @@
+// Owner: Jusitn
+
 const { sql, getPool } = require("../db");
 
 // ---- FEATURE: checkout with multi-vendor split (transactional) ----

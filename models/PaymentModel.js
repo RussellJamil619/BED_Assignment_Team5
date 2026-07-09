@@ -1,3 +1,5 @@
+// Owner: Jusitn
+
 const { sql, getPool } = require("../db");
 
 // Payment history for the logged-in customer (Payment -> Orders -> customer)

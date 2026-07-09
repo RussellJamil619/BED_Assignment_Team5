@@ -1,3 +1,5 @@
+// Owner: Jusitn
+
 const Joi = require("joi");
 
 const cartItemSchema = Joi.object({

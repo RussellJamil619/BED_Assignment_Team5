@@ -1,3 +1,5 @@
+// Owner: Jusitn
+
 const { sql, getPool } = require("../db");
 
 async function getCart(customerId) {
