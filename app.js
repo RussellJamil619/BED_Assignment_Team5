@@ -30,6 +30,8 @@ app.use("/payments", paymentRoutes);
 // app.use("/customers", customerRoutes);
 
 // Arri - Inspection (uncomment when the file exists)
+const inspectionRoutes = require("./routes/inspection");
+app.use("/api/inspections", inspectionRoutes);
 // const inspectionRoutes = require("./routes/inspectionRoutes");
 // app.use("/inspections", inspectionRoutes);
 
