@@ -18,10 +18,12 @@ app.use("/menuitems", menuItemRoutes);
 // Justin - Orders (uncomment when the file exists)
 const cartRoutes = require("./routes/cartRoutes");
 const orderRoutes = require("./routes/orderRoutes");
+const paymentRoutes = require("./routes/paymentRoutes");
 
 app.use(express.json());
 app.use("/cart", cartRoutes);
 app.use("/orders", orderRoutes);
+app.use("/payments", paymentRoutes);
 
 // Russell - Customer (uncomment when the file exists)
 // const customerRoutes = require("./routes/customerRoutes");
