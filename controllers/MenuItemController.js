@@ -1,7 +1,7 @@
 // controllers/menuItemController.js
 // Owner: Leslie
 
-const menuItemModel = require("../models/menuItemModel");
+const menuItemModel = require("../models/MenuItemModel");
 
 const FK_VIOLATION = 547; // SQL Server error number for a foreign key breach
 
