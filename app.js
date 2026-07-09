@@ -16,8 +16,12 @@ const menuItemRoutes = require("./routes/menuItemRoutes");
 app.use("/menuitems", menuItemRoutes);
 
 // Justin - Orders (uncomment when the file exists)
-// const orderRoutes = require("./routes/orderRoutes");
-// app.use("/orders", orderRoutes);
+const cartRoutes = require("./routes/cartRoutes");
+const orderRoutes = require("./routes/orderRoutes");
+
+app.use(express.json());
+app.use("/cart", cartRoutes);
+app.use("/orders", orderRoutes);
 
 // Russell - Customer (uncomment when the file exists)
 // const customerRoutes = require("./routes/customerRoutes");
@@ -31,6 +35,8 @@ app.use("/menuitems", menuItemRoutes);
 app.get("/api", (req, res) => {
   res.json({ message: "HawkerCentreDB API is running" });
 });
+
+
 
 // ---------- Start server ----------
 app.listen(PORT, () => {
