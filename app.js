@@ -26,8 +26,8 @@ app.use("/orders", orderRoutes);
 app.use("/payments", paymentRoutes);
 
 // Russell - Customer (uncomment when the file exists)
-// const customerRoutes = require("./routes/customerRoutes");
-// app.use("/customers", customerRoutes);
+const customerRoutes = require("./routes/customerRoutes");
+app.use("/api", customerRoutes);
 
 // Arri - Inspection (uncomment when the file exists)
 const inspectionRoutes = require("./routes/inspection");
