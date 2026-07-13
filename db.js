@@ -21,12 +21,13 @@ if (fs.existsSync(envPath)) {
 console.log('📝 DB_SERVER from env:', process.env.DB_SERVER);
 console.log('📝 DB_DATABASE from env:', process.env.DB_DATABASE);
 
-// Use Windows Authentication
+// Use SQL Server Authentication
 const config = {
     server: process.env.DB_SERVER || 'localhost',
     database: process.env.DB_DATABASE || 'HawkerCentreDB',
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
     options: {
-        trustedConnection: true,
         encrypt: false,
         trustServerCertificate: true,
         enableArithAbort: true
