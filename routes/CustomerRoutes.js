@@ -1,7 +1,7 @@
 // Russell's - Customer Routes
 const express = require('express');
 const router = express.Router();
-const ctrl = require('../controllers/CustomerController');  // ← This has authenticate inside it
+const ctrl = require('../controllers/CustomerController');
 const { validate, check } = require('../middlewares/ValidateCustomer');
 
 // ===== PUBLIC ROUTES =====

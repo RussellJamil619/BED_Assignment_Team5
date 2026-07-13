@@ -7,24 +7,12 @@ class Customer {
     // ===== CUSTOMER CRUD =====
     static async createCustomer(data) {
         try {
-            console.log('🟢 createCustomer called with:', { 
-                name: data.name, 
-                email: data.email, 
-                phone: data.phone 
-            });
-            
-            console.log('🟢 Calling getPool()...');
+            console.log('🟢 createCustomer called');
             const pool = await getPool();
             
-            console.log('🟢 getPool() returned:', pool);
-            console.log('🟢 pool type:', typeof pool);
-            
             if (!pool) {
-                console.error('🔴 Pool is undefined!');
-                throw new Error('Database pool is undefined. Check your database connection.');
+                throw new Error('Database pool is undefined');
             }
-            
-            console.log('🟢 Pool has request method:', typeof pool.request === 'function');
             
             const query = `
                 INSERT INTO Customer (name, email, password_hash, phone, created_at)
@@ -32,7 +20,6 @@ class Customer {
                 VALUES (@name, @email, @password_hash, @phone, GETDATE())
             `;
             
-            console.log('🟢 Executing query...');
             const result = await pool.request()
                 .input('name', sql.VarChar, data.name)
                 .input('email', sql.VarChar, data.email)
@@ -40,7 +27,6 @@ class Customer {
                 .input('phone', sql.VarChar, data.phone || null)
                 .query(query);
             
-            console.log('🟢 Query successful! Result:', result.recordset[0]);
             return result.recordset[0];
         } catch (error) {
             console.error('🔴 Error creating customer:', error);
@@ -50,7 +36,6 @@ class Customer {
 
     static async findByEmail(email) {
         try {
-            console.log('🟢 findByEmail called with:', email);
             const pool = await getPool();
             
             if (!pool) {
@@ -61,8 +46,6 @@ class Customer {
             const result = await pool.request()
                 .input('email', sql.VarChar, email)
                 .query(query);
-            
-            console.log('🟢 findByEmail result:', result.recordset[0] || 'not found');
             return result.recordset[0] || null;
         } catch (error) {
             console.error('🔴 Error finding customer by email:', error);
@@ -72,7 +55,6 @@ class Customer {
 
     static async findById(id) {
         try {
-            console.log('🟢 findById called with:', id);
             const pool = await getPool();
             
             if (!pool) {
@@ -83,7 +65,6 @@ class Customer {
             const result = await pool.request()
                 .input('id', sql.Int, id)
                 .query(query);
-            
             return result.recordset[0] || null;
         } catch (error) {
             console.error('🔴 Error finding customer by ID:', error);
@@ -93,7 +74,6 @@ class Customer {
 
     static async getAllCustomers() {
         try {
-            console.log('🟢 getAllCustomers called');
             const pool = await getPool();
             
             if (!pool) {
@@ -111,7 +91,6 @@ class Customer {
 
     static async updateCustomer(id, data) {
         try {
-            console.log('🟢 updateCustomer called for id:', id);
             const pool = await getPool();
             
             if (!pool) {
@@ -124,7 +103,6 @@ class Customer {
                 .input('name', sql.VarChar, data.name)
                 .input('phone', sql.VarChar, data.phone || null)
                 .query(query);
-            
             return result.rowsAffected[0] > 0;
         } catch (error) {
             console.error('🔴 Error updating customer:', error);
@@ -134,7 +112,6 @@ class Customer {
 
     static async deleteCustomer(id) {
         try {
-            console.log('🟢 deleteCustomer called for id:', id);
             const pool = await getPool();
             
             if (!pool) {
@@ -145,7 +122,6 @@ class Customer {
             const result = await pool.request()
                 .input('id', sql.Int, id)
                 .query(query);
-            
             return result.rowsAffected[0] > 0;
         } catch (error) {
             console.error('🔴 Error deleting customer:', error);
@@ -156,7 +132,6 @@ class Customer {
     // ===== FEEDBACK CRUD =====
     static async createFeedback(data) {
         try {
-            console.log('🟢 createFeedback called');
             const pool = await getPool();
             
             if (!pool) {

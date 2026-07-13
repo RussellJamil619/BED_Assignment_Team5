@@ -5,6 +5,11 @@ class Complaint {
     static async create(data) {
         try {
             const pool = await getPool();
+            
+            if (!pool) {
+                throw new Error('Database pool is undefined');
+            }
+            
             const query = `
                 INSERT INTO Complaint (customer_id, stall_id, subject, description, status, complaint_date)
                 OUTPUT INSERTED.complaint_id, INSERTED.subject, INSERTED.description, INSERTED.status
@@ -18,7 +23,7 @@ class Complaint {
                 .query(query);
             return result.recordset[0];
         } catch (error) {
-            console.error('Error creating complaint:', error);
+            console.error('🔴 Error creating complaint:', error);
             throw error;
         }
     }
@@ -26,6 +31,11 @@ class Complaint {
     static async getByCustomer(customerId) {
         try {
             const pool = await getPool();
+            
+            if (!pool) {
+                throw new Error('Database pool is undefined');
+            }
+            
             const query = `
                 SELECT c.*, s.stall_name 
                 FROM Complaint c 
@@ -38,7 +48,7 @@ class Complaint {
                 .query(query);
             return result.recordset;
         } catch (error) {
-            console.error('Error getting complaints by customer:', error);
+            console.error('🔴 Error getting complaints by customer:', error);
             throw error;
         }
     }
@@ -46,6 +56,11 @@ class Complaint {
     static async getByStall(stallId) {
         try {
             const pool = await getPool();
+            
+            if (!pool) {
+                throw new Error('Database pool is undefined');
+            }
+            
             const query = `
                 SELECT c.*, cust.name as customer_name 
                 FROM Complaint c 
@@ -58,7 +73,7 @@ class Complaint {
                 .query(query);
             return result.recordset;
         } catch (error) {
-            console.error('Error getting complaints by stall:', error);
+            console.error('🔴 Error getting complaints by stall:', error);
             throw error;
         }
     }
@@ -66,6 +81,11 @@ class Complaint {
     static async getAll() {
         try {
             const pool = await getPool();
+            
+            if (!pool) {
+                throw new Error('Database pool is undefined');
+            }
+            
             const query = `
                 SELECT c.*, cust.name as customer_name, s.stall_name 
                 FROM Complaint c 
@@ -76,7 +96,7 @@ class Complaint {
             const result = await pool.request().query(query);
             return result.recordset;
         } catch (error) {
-            console.error('Error getting all complaints:', error);
+            console.error('🔴 Error getting all complaints:', error);
             throw error;
         }
     }
@@ -84,6 +104,11 @@ class Complaint {
     static async getById(id) {
         try {
             const pool = await getPool();
+            
+            if (!pool) {
+                throw new Error('Database pool is undefined');
+            }
+            
             const query = `
                 SELECT c.*, cust.name as customer_name, s.stall_name 
                 FROM Complaint c 
@@ -96,7 +121,7 @@ class Complaint {
                 .query(query);
             return result.recordset[0] || null;
         } catch (error) {
-            console.error('Error getting complaint by ID:', error);
+            console.error('🔴 Error getting complaint by ID:', error);
             throw error;
         }
     }
@@ -104,6 +129,11 @@ class Complaint {
     static async updateStatus(id, status) {
         try {
             const pool = await getPool();
+            
+            if (!pool) {
+                throw new Error('Database pool is undefined');
+            }
+            
             const query = `UPDATE Complaint SET status = @status WHERE complaint_id = @id`;
             const result = await pool.request()
                 .input('id', sql.Int, id)
@@ -111,7 +141,7 @@ class Complaint {
                 .query(query);
             return result.rowsAffected[0] > 0;
         } catch (error) {
-            console.error('Error updating complaint status:', error);
+            console.error('🔴 Error updating complaint status:', error);
             throw error;
         }
     }
@@ -119,6 +149,11 @@ class Complaint {
     static async delete(id, customerId) {
         try {
             const pool = await getPool();
+            
+            if (!pool) {
+                throw new Error('Database pool is undefined');
+            }
+            
             const query = `DELETE FROM Complaint WHERE complaint_id = @id AND customer_id = @customerId`;
             const result = await pool.request()
                 .input('id', sql.Int, id)
@@ -126,7 +161,7 @@ class Complaint {
                 .query(query);
             return result.rowsAffected[0] > 0;
         } catch (error) {
-            console.error('Error deleting complaint:', error);
+            console.error('🔴 Error deleting complaint:', error);
             throw error;
         }
     }

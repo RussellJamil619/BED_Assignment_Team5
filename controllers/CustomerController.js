@@ -1,5 +1,4 @@
-// Russell's
-
+// Russell's - Customer Controller
 const Customer = require('../models/CustomerModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -12,7 +11,7 @@ exports.authenticate = (req, res, next) => {
     }
     try {
         const token = auth.split(' ')[1];
-        const decoded = jwt.verify(token, 'secret');
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
         req.user = decoded;
         next();
     } catch (err) {
@@ -29,9 +28,10 @@ exports.register = async (req, res) => {
 
         const hash = await bcrypt.hash(password, 10);
         const customer = await Customer.createCustomer({ name, email, password_hash: hash, phone });
-        const token = jwt.sign({ id: customer.customer_id, email }, 'secret', { expiresIn: '7d' });
+        const token = jwt.sign({ id: customer.customer_id, email }, process.env.JWT_SECRET || 'secret', { expiresIn: '7d' });
         res.status(201).json({ message: 'Registered', token, customer });
     } catch (err) {
+        console.error('❌ Register error:', err.message);
         res.status(500).json({ error: err.message });
     }
 };
@@ -45,9 +45,10 @@ exports.login = async (req, res) => {
         const valid = await bcrypt.compare(password, customer.password_hash);
         if (!valid) return res.status(401).json({ error: 'Invalid credentials' });
 
-        const token = jwt.sign({ id: customer.customer_id, email }, 'secret', { expiresIn: '7d' });
+        const token = jwt.sign({ id: customer.customer_id, email }, process.env.JWT_SECRET || 'secret', { expiresIn: '7d' });
         res.json({ message: 'Logged in', token, customer });
     } catch (err) {
+        console.error('❌ Login error:', err.message);
         res.status(500).json({ error: err.message });
     }
 };
@@ -55,8 +56,10 @@ exports.login = async (req, res) => {
 exports.getProfile = async (req, res) => {
     try {
         const customer = await Customer.findById(req.user.id);
+        if (!customer) return res.status(404).json({ error: 'Customer not found' });
         res.json(customer);
     } catch (err) {
+        console.error('❌ Get profile error:', err.message);
         res.status(500).json({ error: err.message });
     }
 };
@@ -67,6 +70,7 @@ exports.updateProfile = async (req, res) => {
         const customer = await Customer.findById(req.user.id);
         res.json({ message: 'Updated', customer });
     } catch (err) {
+        console.error('❌ Update profile error:', err.message);
         res.status(500).json({ error: err.message });
     }
 };
@@ -76,6 +80,7 @@ exports.deleteAccount = async (req, res) => {
         await Customer.deleteCustomer(req.user.id);
         res.json({ message: 'Account deleted' });
     } catch (err) {
+        console.error('❌ Delete account error:', err.message);
         res.status(500).json({ error: err.message });
     }
 };
@@ -85,6 +90,7 @@ exports.getAllCustomers = async (req, res) => {
         const customers = await Customer.getAllCustomers();
         res.json(customers);
     } catch (err) {
+        console.error('❌ Get all customers error:', err.message);
         res.status(500).json({ error: err.message });
     }
 };
@@ -105,6 +111,7 @@ exports.submitFeedback = async (req, res) => {
         const avg = await Customer.getAvgRating(stall_id);
         res.status(201).json({ feedback, average: avg });
     } catch (err) {
+        console.error('❌ Submit feedback error:', err.message);
         res.status(500).json({ error: err.message });
     }
 };
@@ -115,6 +122,7 @@ exports.getFeedbackByStall = async (req, res) => {
         const avg = await Customer.getAvgRating(req.params.stallId);
         res.json({ feedback, average: avg });
     } catch (err) {
+        console.error('❌ Get feedback by stall error:', err.message);
         res.status(500).json({ error: err.message });
     }
 };
@@ -124,6 +132,7 @@ exports.getMyFeedback = async (req, res) => {
         const feedback = await Customer.getFeedbackByCustomer(req.user.id);
         res.json(feedback);
     } catch (err) {
+        console.error('❌ Get my feedback error:', err.message);
         res.status(500).json({ error: err.message });
     }
 };
@@ -133,6 +142,7 @@ exports.updateFeedback = async (req, res) => {
         await Customer.updateFeedback(req.params.feedbackId, req.user.id, req.body);
         res.json({ message: 'Feedback updated' });
     } catch (err) {
+        console.error('❌ Update feedback error:', err.message);
         res.status(500).json({ error: err.message });
     }
 };
@@ -142,6 +152,7 @@ exports.deleteFeedback = async (req, res) => {
         await Customer.deleteFeedback(req.params.feedbackId, req.user.id);
         res.json({ message: 'Feedback deleted' });
     } catch (err) {
+        console.error('❌ Delete feedback error:', err.message);
         res.status(500).json({ error: err.message });
     }
 };
@@ -159,6 +170,7 @@ exports.likeMenuItem = async (req, res) => {
         const count = await Customer.getLikesCount(menu_item_id);
         res.status(201).json({ message: 'Liked', total_likes: count });
     } catch (err) {
+        console.error('❌ Like error:', err.message);
         res.status(500).json({ error: err.message });
     }
 };
@@ -175,6 +187,7 @@ exports.unlikeMenuItem = async (req, res) => {
         const count = await Customer.getLikesCount(menuItemId);
         res.json({ message: 'Unliked', total_likes: count });
     } catch (err) {
+        console.error('❌ Unlike error:', err.message);
         res.status(500).json({ error: err.message });
     }
 };
@@ -184,6 +197,7 @@ exports.getLikesCount = async (req, res) => {
         const count = await Customer.getLikesCount(req.params.menuItemId);
         res.json({ total_likes: count });
     } catch (err) {
+        console.error('❌ Get likes count error:', err.message);
         res.status(500).json({ error: err.message });
     }
 };
@@ -193,6 +207,7 @@ exports.getMyLikes = async (req, res) => {
         const likes = await Customer.getLikesByCustomer(req.user.id);
         res.json(likes);
     } catch (err) {
+        console.error('❌ Get my likes error:', err.message);
         res.status(500).json({ error: err.message });
     }
 };
@@ -209,6 +224,7 @@ exports.submitComplaint = async (req, res) => {
         const complaint = await Customer.createComplaint({ customer_id: customerId, stall_id, subject, description });
         res.status(201).json(complaint);
     } catch (err) {
+        console.error('❌ Submit complaint error:', err.message);
         res.status(500).json({ error: err.message });
     }
 };
@@ -218,6 +234,7 @@ exports.getMyComplaints = async (req, res) => {
         const complaints = await Customer.getComplaintsByCustomer(req.user.id);
         res.json(complaints);
     } catch (err) {
+        console.error('❌ Get my complaints error:', err.message);
         res.status(500).json({ error: err.message });
     }
 };
@@ -227,6 +244,7 @@ exports.getComplaintsByStall = async (req, res) => {
         const complaints = await Customer.getComplaintsByStall(req.params.stallId);
         res.json(complaints);
     } catch (err) {
+        console.error('❌ Get complaints by stall error:', err.message);
         res.status(500).json({ error: err.message });
     }
 };
@@ -236,6 +254,7 @@ exports.getAllComplaints = async (req, res) => {
         const complaints = await Customer.getAllComplaints();
         res.json(complaints);
     } catch (err) {
+        console.error('❌ Get all complaints error:', err.message);
         res.status(500).json({ error: err.message });
     }
 };
@@ -249,6 +268,7 @@ exports.updateComplaintStatus = async (req, res) => {
         await Customer.updateComplaintStatus(req.params.complaintId, status);
         res.json({ message: `Status updated to ${status}` });
     } catch (err) {
+        console.error('❌ Update complaint status error:', err.message);
         res.status(500).json({ error: err.message });
     }
 };
@@ -258,6 +278,7 @@ exports.deleteComplaint = async (req, res) => {
         await Customer.deleteComplaint(req.params.complaintId, req.user.id);
         res.json({ message: 'Complaint deleted' });
     } catch (err) {
+        console.error('❌ Delete complaint error:', err.message);
         res.status(500).json({ error: err.message });
     }
 };

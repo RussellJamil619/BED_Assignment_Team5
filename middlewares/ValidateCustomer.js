@@ -1,5 +1,4 @@
-// Russell's 
-
+// Russell's - Customer Validations
 const { body, validationResult } = require('express-validator');
 
 const validate = {

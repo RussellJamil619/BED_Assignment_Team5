@@ -5,6 +5,11 @@ class Feedback {
     static async create(data) {
         try {
             const pool = await getPool();
+            
+            if (!pool) {
+                throw new Error('Database pool is undefined');
+            }
+            
             const query = `
                 INSERT INTO Feedback (customer_id, stall_id, rating, comments, feedback_date)
                 OUTPUT INSERTED.feedback_id, INSERTED.rating, INSERTED.comments
@@ -18,7 +23,7 @@ class Feedback {
                 .query(query);
             return result.recordset[0];
         } catch (error) {
-            console.error('Error creating feedback:', error);
+            console.error('🔴 Error creating feedback:', error);
             throw error;
         }
     }
@@ -26,6 +31,11 @@ class Feedback {
     static async getByStall(stallId) {
         try {
             const pool = await getPool();
+            
+            if (!pool) {
+                throw new Error('Database pool is undefined');
+            }
+            
             const query = `
                 SELECT f.*, c.name as customer_name 
                 FROM Feedback f 
@@ -38,7 +48,7 @@ class Feedback {
                 .query(query);
             return result.recordset;
         } catch (error) {
-            console.error('Error getting feedback by stall:', error);
+            console.error('🔴 Error getting feedback by stall:', error);
             throw error;
         }
     }
@@ -46,6 +56,11 @@ class Feedback {
     static async getByCustomer(customerId) {
         try {
             const pool = await getPool();
+            
+            if (!pool) {
+                throw new Error('Database pool is undefined');
+            }
+            
             const query = `
                 SELECT f.*, s.stall_name 
                 FROM Feedback f 
@@ -58,7 +73,7 @@ class Feedback {
                 .query(query);
             return result.recordset;
         } catch (error) {
-            console.error('Error getting feedback by customer:', error);
+            console.error('🔴 Error getting feedback by customer:', error);
             throw error;
         }
     }
@@ -66,6 +81,11 @@ class Feedback {
     static async getAvgRating(stallId) {
         try {
             const pool = await getPool();
+            
+            if (!pool) {
+                throw new Error('Database pool is undefined');
+            }
+            
             const query = `
                 SELECT AVG(CAST(rating AS DECIMAL(3,2))) as avg_rating, COUNT(*) as total 
                 FROM Feedback WHERE stall_id = @stallId
@@ -75,7 +95,7 @@ class Feedback {
                 .query(query);
             return result.recordset[0];
         } catch (error) {
-            console.error('Error getting average rating:', error);
+            console.error('🔴 Error getting average rating:', error);
             throw error;
         }
     }
@@ -83,6 +103,11 @@ class Feedback {
     static async getByCustomerAndStall(customerId, stallId) {
         try {
             const pool = await getPool();
+            
+            if (!pool) {
+                throw new Error('Database pool is undefined');
+            }
+            
             const query = `SELECT * FROM Feedback WHERE customer_id = @customerId AND stall_id = @stallId`;
             const result = await pool.request()
                 .input('customerId', sql.Int, customerId)
@@ -90,7 +115,7 @@ class Feedback {
                 .query(query);
             return result.recordset[0] || null;
         } catch (error) {
-            console.error('Error checking feedback:', error);
+            console.error('🔴 Error checking feedback:', error);
             throw error;
         }
     }
@@ -98,6 +123,11 @@ class Feedback {
     static async update(id, customerId, data) {
         try {
             const pool = await getPool();
+            
+            if (!pool) {
+                throw new Error('Database pool is undefined');
+            }
+            
             const query = `UPDATE Feedback SET rating = @rating, comments = @comments WHERE feedback_id = @id AND customer_id = @customerId`;
             const result = await pool.request()
                 .input('id', sql.Int, id)
@@ -107,7 +137,7 @@ class Feedback {
                 .query(query);
             return result.rowsAffected[0] > 0;
         } catch (error) {
-            console.error('Error updating feedback:', error);
+            console.error('🔴 Error updating feedback:', error);
             throw error;
         }
     }
@@ -115,6 +145,11 @@ class Feedback {
     static async delete(id, customerId) {
         try {
             const pool = await getPool();
+            
+            if (!pool) {
+                throw new Error('Database pool is undefined');
+            }
+            
             const query = `DELETE FROM Feedback WHERE feedback_id = @id AND customer_id = @customerId`;
             const result = await pool.request()
                 .input('id', sql.Int, id)
@@ -122,7 +157,7 @@ class Feedback {
                 .query(query);
             return result.rowsAffected[0] > 0;
         } catch (error) {
-            console.error('Error deleting feedback:', error);
+            console.error('🔴 Error deleting feedback:', error);
             throw error;
         }
     }
