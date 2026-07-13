@@ -1,8 +1,14 @@
 // db.js
 const sql = require("mssql");
-const dbConfig = require("./dbConfig");   // <-- db.js imports dbConfig.js here
+const dbConfig = require("./dbConfig");
 
 let poolPromise;
-function getPool() { /* ... creates one shared pool ... */ }
+
+function getPool() {
+  if (!poolPromise) {
+    poolPromise = sql.connect(dbConfig);
+  }
+  return poolPromise;
+}
 
 module.exports = { sql, getPool };
