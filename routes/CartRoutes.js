@@ -1,4 +1,4 @@
-// Owner: Jusitn
+// Owner: Justin
 
 const express = require("express");
 const router = express.Router();
@@ -7,8 +7,7 @@ const {
   validateBody,
   cartItemSchema,
 } = require("../middlewares/ValidateOrder");
-const verifyToken = require("../middlewares/authMiddleware"); // <-- Russell's JWT middleware
-
+const verifyToken = require("../middlewares/authMiddleware"); // TODO: re-enable when Russell's file is in
 router.use(verifyToken); // all cart routes require login
 
 router.get("/", cartController.viewCart);
