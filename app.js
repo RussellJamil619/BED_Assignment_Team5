@@ -26,8 +26,12 @@ app.use("/orders", orderRoutes);
 app.use("/payments", paymentRoutes);
 
 // Russell - Customer (uncomment when the file exists)
+// Russell - Customer
+const authRoutes = require("./routes/authRoutes");
+app.use("/api/auth", authRoutes);          // yours FIRST
+
 const customerRoutes = require("./routes/customerRoutes");
-app.use("/api", customerRoutes);
+app.use("/api", customerRoutes);           // Russell's after
 
 // Arri - Inspection (uncomment when the file exists)
 const inspectionRoutes = require("./routes/inspection");
