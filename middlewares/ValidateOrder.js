@@ -15,8 +15,8 @@ const checkoutSchema = Joi.object({
 const addonsSchema = Joi.object({
   addons: Joi.array().items(
     Joi.object({
-      addon_id: Joi.number().integer().positive().required(),
-      quantity: Joi.number().integer().min(1).max(20).required(),
+      order_item_id: Joi.number().integer().required(),
+      addon_id: Joi.number().integer().required(),
     })
   ).min(1).required(),
 });

@@ -22,5 +22,7 @@ router.post(
   validateBody(addonsSchema),
   orderController.addAddons,
 );
+router.put("/:id/status", orderController.updateStatus);
+router.delete("/:id", orderController.cancel);
 
 module.exports = router;
