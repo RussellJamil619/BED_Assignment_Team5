@@ -54,4 +54,5 @@ async function updatePaymentStatus(paymentId, customerId, newStatus) {
   return result.rowsAffected[0];
 }
 
+
 module.exports = { getMyPayments, getPaymentById, updatePaymentStatus };

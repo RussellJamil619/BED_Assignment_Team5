@@ -34,5 +34,15 @@ async function updatePayment(req, res) {
     res.status(500).json({ error: "Failed to update payment" });
   }
 }
+async function remove(req, res) {
+  try {
+    const rows = await paymentModel.deletePayment(Number(req.params.id), req.user.customer_id);
+    if (rows === 0) return res.status(404).json({ error: "Payment not found" });
+    res.json({ message: "Payment deleted" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to delete payment" });
+  }
+}
 
-module.exports = { myPayments, getPayment, updatePayment };
+module.exports = { myPayments, getPayment, updatePayment, remove };
