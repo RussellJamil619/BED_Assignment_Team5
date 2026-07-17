@@ -5,6 +5,7 @@ require("dotenv").config();   // load standard .env
 console.log('📝 DB_USER from env:', process.env.DB_USER);
 console.log('📝 DB_SERVER from env:', process.env.DB_SERVER);
 
+// Use SQL Server Authentication
 const config = {
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
