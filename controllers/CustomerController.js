@@ -1,60 +1,9 @@
 // Russell's - Customer Controller
 const Customer = require('../models/CustomerModel');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 
-// ===== AUTH MIDDLEWARE (inside controller) =====
-exports.authenticate = (req, res, next) => {
-    const auth = req.headers.authorization;
-    if (!auth || !auth.startsWith('Bearer ')) {
-        return res.status(401).json({ error: 'Authentication required' });
-    }
-    try {
-        const token = auth.split(' ')[1];
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
-        req.user = decoded;
-        next();
-    } catch (err) {
-        return res.status(401).json({ error: 'Invalid or expired token' });
-    }
-};
+// NOTE: register/login/authenticate now live in authController.js + AuthMiddleware.js (shared)
 
 // ===== CUSTOMER =====
-exports.register = async (req, res) => {
-    try {
-        const { name, email, password, phone } = req.body;
-        const existing = await Customer.findByEmail(email);
-        if (existing) return res.status(409).json({ error: 'Email already registered' });
-
-        const hash = await bcrypt.hash(password, 10);
-        const customer = await Customer.createCustomer({ name, email, password_hash: hash, phone });
-        const token = jwt.sign({ id: customer.customer_id, email }, process.env.JWT_SECRET || 'secret', { expiresIn: '7d' });
-        res.status(201).json({ message: 'Registered', token, customer });
-    } catch (err) {
-        console.error('❌ Register error:', err.message);
-        res.status(500).json({ error: err.message });
-    }
-};
-
-exports.login = async (req, res) => {
-    try {
-        const { email, password } = req.body;
-        const customer = await Customer.findByEmail(email);
-        if (!customer) return res.status(401).json({ error: 'Invalid credentials' });
-
-        const valid = await bcrypt.compare(password, customer.password_hash);
-        if (!valid) return res.status(401).json({ error: 'Invalid credentials' });
-
-        const token = jwt.sign({ id: customer.customer_id, email }, process.env.JWT_SECRET || 'secret', { expiresIn: '7d' });
-        
-        delete customer.password_hash;
-        res.json({ message: 'Logged in', token, customer });
-    } catch (err) {
-        console.error('❌ Login error:', err.message);
-        res.status(500).json({ error: err.message });
-    }
-};
-
 exports.getProfile = async (req, res) => {
     try {
         const customer = await Customer.findById(req.user.id);
