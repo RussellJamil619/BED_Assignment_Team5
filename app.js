@@ -15,7 +15,7 @@ app.use(express.static(path.join(__dirname, "public")));  // serve index.html, c
 const menuItemRoutes = require("./routes/menuItemRoutes");
 app.use("/menuitems", menuItemRoutes);
 
-// Justin - Orders (uncomment when the file exists)
+// Justin - Orders 
 const cartRoutes = require("./routes/cartRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
@@ -25,15 +25,14 @@ app.use("/cart", cartRoutes);
 app.use("/orders", orderRoutes);
 app.use("/payments", paymentRoutes);
 
-// Russell - Customer (uncomment when the file exists)
 // Russell - Customer
 const authRoutes = require("./routes/authRoutes");
-app.use("/api/auth", authRoutes);          // yours FIRST
+app.use("/api/auth", authRoutes);         
 
 const customerRoutes = require("./routes/customerRoutes");
-app.use("/api", customerRoutes);           // Russell's after
+app.use("/api", customerRoutes);           
 
-// Arri - Inspection (uncomment when the file exists)
+// Arri - Inspection 
 const inspectionRoutes = require("./routes/inspection");
 app.use("/api/inspections", inspectionRoutes);
 // const inspectionRoutes = require("./routes/inspectionRoutes");
