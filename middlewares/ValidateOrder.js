@@ -33,5 +33,12 @@ function validateBody(schema) {
     next();
   };
 }
+const updateCartItemSchema = Joi.object({
+  quantity: Joi.number().integer().min(1).required(),
+});
 
-module.exports = { validateBody, cartItemSchema, checkoutSchema, addonsSchema };
+const orderStatusSchema = Joi.object({
+  status: Joi.string().valid("Preparing", "Ready", "Collected", "Cancelled").required(),
+});
+
+module.exports = { validateBody, cartItemSchema, checkoutSchema, addonsSchema, updateCartItemSchema, orderStatusSchema };
