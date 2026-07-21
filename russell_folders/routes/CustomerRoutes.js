@@ -1,9 +1,9 @@
 // Russell's - Customer Routes
 const express = require('express');
 const router = express.Router();
-const ctrl = require('../controllers/CustomerController');
-const authenticate = require('../middlewares/AuthMiddleware');
-const { validate, check } = require('../middlewares/ValidateCustomer');
+const ctrl = require('../../controllers/CustomerController');
+const authenticate = require('../middleware/AuthMiddleware');
+const { validate, check } = require('../middleware/ValidateCustomer');
 
 // notes for me: /register and /login now live in authRoutes.js (Justin's authController.js)
 // Mounted separately in app.js at /api/auth

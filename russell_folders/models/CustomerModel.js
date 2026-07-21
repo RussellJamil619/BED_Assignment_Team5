@@ -1,5 +1,5 @@
 // Russell's - Customer Model
-const { sql, getPool } = require('../db');
+const { sql, getPool } = require('../../db');
 
 console.log('✅ db module loaded:', { sql: !!sql, getPool: !!getPool });
 
