@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Log in — Team 5 Hawker Centre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main class="wrap">
+  <span class="eyebrow">Russell's feature — Authentication</span>
+  <h1>Log in</h1>
+  <form id="loginForm" class="panel">
+    <label for="email">Email</label>
+    <input id="email" type="email" required autocomplete="email">
+    <label for="password">Password</label>
+    <input id="password" type="password" required autocomplete="current-password">
+    <div id="errs"></div>
+    <button type="submit">Log in</button>
+    <p class="note">No account yet? <a href="register.html">Register</a></p>
+  </form>
+</main>
+
+<script src="js/api.js"></script>
+<script>
+navInit("login"); footerInit();
+document.getElementById("loginForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const errs = document.getElementById("errs"); errs.innerHTML = "";
+  try {
+    const r = await api(EP.login, { method: "POST", body: {
+      email: document.getElementById("email").value,
+      password: document.getElementById("password").value } });
+    // token key may differ — confirm response shape with Russell
+    setToken(r.token ?? r.accessToken ?? r.jwt);
+    toast("Welcome back"); location.href = "menu.html";
+  } catch (err) { showErrors(errs, err); }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stall — Team 5 Hawker Centre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main class="wrap">
+  <p><a href="menu.html">← Back to menu</a></p>
+  <span class="eyebrow">Stall page — Leslie's menu + Russell's reviews</span>
+  <h1 id="stallTitle">Stall</h1>
+
+  <h2 style="margin-top:1.5rem">Menu</h2>
+  <div id="stallMenu" class="grid cards"><p class="note">Loading…</p></div>
+
+  <h2 style="margin-top:2rem">Reviews</h2>
+  <div id="reviewSummary" class="note"></div>
+  <div id="reviewList" style="margin-top:.6rem"></div>
+
+  <form id="reviewForm" class="panel" style="margin-top:1rem;display:none">
+    <h3>Leave a review</h3>
+    <p class="note">Reviews are open to customers who have ordered from this stall.</p>
+    <label for="rating">Rating</label>
+    <select id="rating"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select>
+    <label for="comments">Comments</label>
+    <textarea id="comments" rows="3"></textarea>
+    <div id="revErrs"></div>
+    <button type="submit">Post review</button>
+  </form>
+</main>
+
+<script src="js/api.js"></script>
+<script>
+navInit("menu"); footerInit();
+const stallId = qsParam("id");
+document.getElementById("stallTitle").textContent = "Stall " + stallId;
+
+// Menu for this stall — reuses Leslie's ?stall_id= filter (works today).
+// When Leslie's GET /stalls/:id/menuitems ships (L7), swap to one call.
+(async () => {
+  const grid = document.getElementById("stallMenu");
+  try {
+    const r = await api(EP.menuItems + "?stall_id=" + stallId);
+    grid.innerHTML = r.data.map(d => `
+      <a class="card" href="dish.html?id=${d.menu_item_id}">
+        <div style="display:flex;justify-content:space-between"><h3>${d.name}</h3>
+          <span class="price">${money(d.price)}</span></div>
+        <span class="chip cat-${d.category}">${d.category}</span>
+        ${d.is_available ? "" : '<p class="soldout">Sold out</p>'}
+      </a>`).join("") || '<p class="note">No dishes yet.</p>';
+  } catch (err) { grid.innerHTML = ""; showErrors(grid, err); }
+})();
+
+// Public reviews — Russell's feature (confirm EP.stallFeedback path)
+(async () => {
+  const listEl = document.getElementById("reviewList");
+  try {
+    const r = await api(EP.stallFeedback(stallId));
+    const reviews = r.reviews ?? r.data ?? r;
+    const avg = r.average ?? (reviews.length
+      ? (reviews.reduce((s,x)=>s+x.rating,0)/reviews.length).toFixed(1) : null);
+    document.getElementById("reviewSummary").textContent =
+      reviews.length ? `★ ${avg} average · ${reviews.length} review${reviews.length===1?"":"s"}` : "No reviews yet.";
+    listEl.innerHTML = reviews.map(x => `
+      <div class="card" style="margin-bottom:.6rem">
+        <strong>${"★".repeat(x.rating)}${"☆".repeat(5-x.rating)}</strong>
+        <p style="margin:.3rem 0">${x.comments ?? ""}</p>
+        <p class="note">${x.name ?? "Customer"} · <span class="mono">${(x.feedback_date ?? "").slice(0,10)}</span></p>
+      </div>`).join("");
+  } catch {
+    document.getElementById("reviewSummary").textContent =
+      "Reviews endpoint not wired yet — confirm path with Russell in js/api.js.";
+  }
+  if (isLoggedIn()) document.getElementById("reviewForm").style.display = "";
+})();
+
+document.getElementById("reviewForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const errs = document.getElementById("revErrs"); errs.innerHTML = "";
+  try {
+    await api(EP.feedback, { method: "POST", body: {
+      stall_id: Number(stallId),
+      rating: Number(document.getElementById("rating").value),
+      comments: document.getElementById("comments").value } });
+    toast("Review posted"); location.reload();
+  } catch (err) { showErrors(errs, err); }   // shows Russell's "order first" rule directly
+});
+</script>
+</body>
+</html>

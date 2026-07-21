@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Register — Team 5 Hawker Centre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main class="wrap">
+  <span class="eyebrow">Russell's feature — Authentication</span>
+  <h1>Create an account</h1>
+  <form id="regForm" class="panel">
+    <label for="name">Name</label>
+    <input id="name" required autocomplete="name">
+    <label for="email">Email</label>
+    <input id="email" type="email" required autocomplete="email">
+    <label for="phone">Phone</label>
+    <input id="phone" required autocomplete="tel">
+    <label for="password">Password</label>
+    <input id="password" type="password" required autocomplete="new-password">
+    <div id="errs"></div>
+    <button type="submit">Register</button>
+    <p class="note">Already registered? <a href="login.html">Log in</a></p>
+  </form>
+</main>
+
+<script src="js/api.js"></script>
+<script>
+navInit("register"); footerInit();
+document.getElementById("regForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const errs = document.getElementById("errs"); errs.innerHTML = "";
+  try {
+    const r = await api(EP.register, { method: "POST", body: {
+      name: document.getElementById("name").value,
+      email: document.getElementById("email").value,
+      phone: document.getElementById("phone").value,
+      password: document.getElementById("password").value } });
+    if (r.token ?? r.accessToken) { setToken(r.token ?? r.accessToken); toast("Account created"); location.href = "menu.html"; }
+    else { toast("Account created — please log in"); location.href = "login.html"; }
+  } catch (err) { showErrors(errs, err); }
+});
+</script>
+</body>
+</html>
