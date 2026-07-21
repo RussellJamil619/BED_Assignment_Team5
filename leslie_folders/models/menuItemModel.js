@@ -1,8 +1,8 @@
-// models/menuItemModel.js
+// leslie_folders/models/menuItemModel.js
 // Owner: Leslie
 
 const sql = require("mssql");
-const dbConfig = require("../dbConfig");
+const dbConfig = require("../../dbConfig"); // two levels up: leslie_folders/models -> root
 
 // Reuse one connection pool instead of connecting on every request
 let poolPromise = null;

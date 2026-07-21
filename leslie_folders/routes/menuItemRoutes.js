@@ -1,17 +1,18 @@
-// routes/menuItemRoutes.js
+// leslie_folders/routes/menuItemRoutes.js
 // Owner: Leslie
 
 const express = require("express");
 const router = express.Router();
 
-const controller = require("../controllers/menuItemController");
+const controller = require("../controllers/menuItemController");   // same level inside leslie_folders
 const {
   validateMenuItem,
   validateMenuItemId,
   validateMenuItemQuery
-} = require("../middlewares/ValidateMenuItem.js");
+} = require("../middlewares/validateMenuItem");
 
-// Paths are relative to the prefix in app.js: app.use("/menuitems", menuItemRoutes)
+// Paths are relative to the prefix in app.js:
+// app.use("/menuitems", require("./leslie_folders/routes/menuItemRoutes"))
 
 router.get("/", validateMenuItemQuery, controller.getAllMenuItems);
 
