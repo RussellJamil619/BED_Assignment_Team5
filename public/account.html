@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My account — Team 5 Hawker Centre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main class="wrap">
+  <span class="eyebrow">Russell's feature — Profile & Complaints</span>
+  <h1>My account</h1>
+
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr));align-items:start">
+    <form id="profileForm" class="panel">
+      <h3>Profile</h3>
+      <label for="pname">Name</label>
+      <input id="pname" required>
+      <label for="pemail">Email</label>
+      <input id="pemail" type="email" disabled>
+      <p class="note" style="margin-top:.2rem">Email can't be changed.</p>
+      <label for="pphone">Phone</label>
+      <input id="pphone" required>
+      <div id="profErrs"></div>
+      <button type="submit">Save changes</button>
+    </form>
+
+    <div>
+      <form id="complaintForm" class="panel">
+        <h3>Submit a complaint</h3>
+        <p class="note">You can only complain about a stall you've ordered from.</p>
+        <label for="cStall">Stall ID</label>
+        <input id="cStall" type="number" min="1" required>
+        <label for="cText">What happened?</label>
+        <textarea id="cText" rows="3" required></textarea>
+        <div id="compErrs"></div>
+        <button type="submit">Submit complaint</button>
+      </form>
+
+      <div class="panel" style="margin-top:1rem;max-width:none">
+        <h3>My complaints</h3>
+        <div id="complaintList"><p class="note">Loading…</p></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="js/api.js"></script>
+<script>
+navInit("account"); footerInit();
+if (!isLoggedIn()) location.href = "login.html";
+
+// ----- profile (confirm EP.profile path with Russell) -----
+async function loadProfile() {
+  try {
+    const p = await api(EP.profile);
+    document.getElementById("pname").value = p.name ?? "";
+    document.getElementById("pemail").value = p.email ?? "";
+    document.getElementById("pphone").value = p.phone ?? "";
+  } catch (err) {
+    showErrors(document.getElementById("profErrs"), err);
+  }
+}
+document.getElementById("profileForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const errs = document.getElementById("profErrs"); errs.innerHTML = "";
+  try {
+    await api(EP.profile, { method: "PUT", body: {
+      name: document.getElementById("pname").value,
+      phone: document.getElementById("pphone").value } });
+    toast("Profile saved");
+  } catch (err) { showErrors(errs, err); }
+});
+
+// ----- complaints: submit + view own + delete own -----
+// NOTE (from Russell): do NOT build a resolve/close control here — the backend's
+// status-update route isn't operator-gated yet, so exposing it would let any
+// customer close any complaint. Submit/view/delete only.
+async function loadComplaints() {
+  const list = document.getElementById("complaintList");
+  try {
+    const result = await api(EP.myComplaints);
+    const rows = result.data ?? result;
+    if (!rows.length) { list.innerHTML = '<p class="note">No complaints filed.</p>'; return; }
+    list.innerHTML = rows.map(c => `
+      <div style="border-bottom:1px solid var(--line);padding:.6rem 0">
+        <div style="display:flex;justify-content:space-between;gap:.6rem;align-items:start">
+          <div>
+            <strong>Stall ${c.stall_id}</strong>
+            <span class="status ${c.status ?? "Pending"}">${c.status ?? "Pending"}</span>
+            <p style="margin:.25rem 0">${c.description ?? c.complaint_text ?? ""}</p>
+            <p class="note mono">${(c.created_at ?? c.complaint_date ?? "").slice(0,10)}</p>
+          </div>
+          <button class="small danger" data-del="${c.complaint_id ?? c.id}">Delete</button>
+        </div>
+      </div>`).join("");
+    list.querySelectorAll("[data-del]").forEach(b => b.addEventListener("click", async () => {
+      if (!confirm("Delete this complaint?")) return;
+      try { await api(EP.complaint(b.dataset.del), { method: "DELETE" }); loadComplaints(); }
+      catch (err) { toast(err.body?.message ?? "Delete failed"); }
+    }));
+  } catch { list.innerHTML = '<p class="note">Complaints endpoint not wired yet — confirm path with Russell in <span class="mono">js/api.js</span>.</p>'; }
+}
+document.getElementById("complaintForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const errs = document.getElementById("compErrs"); errs.innerHTML = "";
+  try {
+    await api(EP.complaints, { method: "POST", body: {
+      stall_id: Number(document.getElementById("cStall").value),
+      description: document.getElementById("cText").value } });
+    toast("Complaint submitted"); e.target.reset(); loadComplaints();
+  } catch (err) { showErrors(errs, err); }   // includes the "order first" rule message
+});
+
+loadProfile(); loadComplaints();
+</script>
+</body>
+</html>

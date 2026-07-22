@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My orders — Team 5 Hawker Centre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main class="wrap">
+  <span class="eyebrow">Justin's feature — Orders</span>
+  <h1>My orders</h1>
+  <p class="lede">Cancel while an order is still <strong>Pending</strong> (J7), or reorder a past
+  order straight back into your cart (J11).</p>
+  <div id="ordersBox" style="margin-top:1.2rem"><p class="note">Loading orders…</p></div>
+</main>
+
+<script src="js/api.js"></script>
+<script>
+navInit("orders"); footerInit();
+const box = document.getElementById("ordersBox");
+
+async function load() {
+  if (!isLoggedIn()) {
+    box.innerHTML = '<div class="panel"><p>Log in to see your orders.</p><a href="login.html"><button class="small">Log in</button></a></div>';
+    return;
+  }
+  try {
+    const result = await api(EP.orders);
+    const orders = result.data ?? result;
+    if (!orders.length) { box.innerHTML = '<div class="panel"><p>No orders yet — <a href="menu.html">browse the menu</a>.</p></div>'; return; }
+
+    box.innerHTML = orders.map(o => `
+      <div class="card" style="margin-bottom:.8rem">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.6rem">
+          <div>
+            <strong>Order #${o.order_id}</strong>
+            <span class="status ${o.status}">${o.status}</span>
+            <p class="note mono" style="margin:.2rem 0 0">${(o.order_datetime ?? "").replace("T"," ").slice(0,16)} · ${money(o.total_amount)}</p>
+          </div>
+          <div style="display:flex;gap:.5rem">
+            ${o.status === "Pending"
+              ? `<button class="small danger" data-cancel="${o.order_id}">Cancel order</button>` : ""}
+            <button class="small ghost" data-reorder="${o.order_id}">Reorder</button>
+          </div>
+        </div>
+      </div>`).join("");
+
+    // J7 — cancel only while Pending; backend enforces it, button just mirrors it
+    box.querySelectorAll("[data-cancel]").forEach(b => b.addEventListener("click", async () => {
+      if (!confirm("Cancel this order? A refund will be triggered.")) return;
+      try { await api(EP.orderCancel(b.dataset.cancel), { method: "PUT" }); toast("Order cancelled"); load(); }
+      catch (err) { toast(err.body?.message ?? "Cancel endpoint not wired yet"); }
+    }));
+    // J11 — reorder past items back into cart (backend re-validates prices/availability)
+    box.querySelectorAll("[data-reorder]").forEach(b => b.addEventListener("click", async () => {
+      try { await api(EP.reorder(b.dataset.reorder), { method: "POST" }); toast("Items added back to cart"); location.href = "cart.html"; }
+      catch (err) { toast(err.body?.message ?? "Reorder endpoint not wired yet"); }
+    }));
+  } catch (err) {
+    box.innerHTML = '<div class="panel"><p class="note">Orders endpoints aren\'t reachable yet — confirm paths with Justin in <span class="mono">js/api.js</span>.</p></div>';
+  }
+}
+load();
+</script>
+</body>
+</html>

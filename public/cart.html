@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cart — Team 5 Hawker Centre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main class="wrap">
+  <span class="eyebrow">Justin's feature — Cart & Checkout</span>
+  <h1>Your cart</h1>
+  <div id="cartBox"><p class="note">Loading cart…</p></div>
+</main>
+
+<script src="js/api.js"></script>
+<script>
+navInit("cart"); footerInit();
+const box = document.getElementById("cartBox");
+
+async function load() {
+  if (!isLoggedIn()) {
+    box.innerHTML = '<div class="panel"><p>Log in to see your cart.</p><a href="login.html"><button class="small">Log in</button></a></div>';
+    return;
+  }
+  try {
+    const cart = await api(EP.cart);                 // confirm shape with Justin
+    const items = cart.items ?? cart.data ?? cart;
+    if (!items.length) {
+      box.innerHTML = '<div class="panel"><p>Your cart is empty.</p><a href="menu.html"><button class="small">Browse the menu</button></a></div>';
+      return;
+    }
+    const total = cart.total ?? items.reduce((s,i) => s + i.price * i.quantity, 0);
+    box.innerHTML = `
+      <table>
+        <thead><tr><th>Dish</th><th>Qty</th><th>Price</th><th></th></tr></thead>
+        <tbody>${items.map(i => `
+          <tr>
+            <td>${i.name ?? "Item " + i.menu_item_id}</td>
+            <td class="mono">${i.quantity}</td>
+            <td class="mono">${money(i.price * i.quantity)}</td>
+            <td><button class="small danger" data-remove="${i.cart_item_id ?? i.id}">Remove</button></td>
+          </tr>`).join("")}
+        </tbody>
+      </table>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:1rem;flex-wrap:wrap;gap:.8rem">
+        <button class="ghost" id="clearBtn">Clear entire cart</button>
+        <div style="text-align:right">
+          <p style="margin:.2rem 0"><strong>Total: <span class="mono">${money(total)}</span></strong></p>
+          <button id="checkoutBtn">Check out</button>
+        </div>
+      </div>
+      <p class="note" id="cartMsg"></p>`;
+
+    box.querySelectorAll("[data-remove]").forEach(b => b.addEventListener("click", async () => {
+      try { await api(EP.cartItem(b.dataset.remove), { method: "DELETE" }); load(); }
+      catch (err) { toast(err.body?.message ?? "Could not remove item"); }
+    }));
+    // J10 — clear entire cart in one call
+    document.getElementById("clearBtn").addEventListener("click", async () => {
+      if (!confirm("Remove everything from your cart?")) return;
+      try { await api(EP.cartClear, { method: "DELETE" }); load(); }
+      catch (err) { toast(err.body?.message ?? "Clear-cart endpoint not wired yet"); }
+    });
+    document.getElementById("checkoutBtn").addEventListener("click", async () => {
+      try { await api(EP.checkout, { method: "POST" }); toast("Order placed!"); location.href = "orders.html"; }
+      catch (err) { toast(err.body?.message ?? "Checkout endpoint not wired yet — see js/api.js"); }
+    });
+  } catch (err) {
+    box.innerHTML = ""; 
+    box.innerHTML = '<div class="panel"><p class="note">Cart endpoints aren\'t reachable yet — confirm the paths with Justin in <span class="mono">js/api.js</span> (EP.cart).</p></div>';
+  }
+}
+load();
+</script>
+</body>
+</html>
