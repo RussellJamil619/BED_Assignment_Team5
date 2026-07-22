@@ -1,7 +1,7 @@
 // Russell's - Customer Routes
 const express = require('express');
 const router = express.Router();
-const ctrl = require('../../controllers/CustomerController');
+const ctrl = require('../controllers/CustomerController');
 const authenticate = require('../middleware/AuthMiddleware');
 const { validate, check } = require('../middleware/ValidateCustomer');
 
