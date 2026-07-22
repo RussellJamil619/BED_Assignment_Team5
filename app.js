@@ -14,18 +14,10 @@ app.use(express.static(path.join(__dirname, "public")));  // serve index.html, c
 
 // Leslie - MenuItem (moved into leslie_folders)
 const menuItemRoutes = require("./leslie_folders/routes/menuItemRoutes");
+app.use("/stalls", require("./leslie_folders/routes/stallRoutes"));
 app.use("/menuitems", menuItemRoutes);
 
-<<<<<<< HEAD
-// Leslie - future features (uncomment as each is built)
-// app.use("/stalls", require("./leslie_folders/routes/stallRoutes"));
-// app.use("/cuisines", require("./leslie_folders/routes/cuisineRoutes"));
-// app.use("/promotions", require("./leslie_folders/routes/promotionRoutes"));
-
-// Justin - Cart, Orders & Payments
-=======
 // Justin - Orders 
->>>>>>> 3656f84c8d1fc4450d6748c2f3ca6b3f009afede
 const cartRoutes = require("./routes/cartRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
@@ -33,16 +25,6 @@ app.use("/cart", cartRoutes);
 app.use("/orders", orderRoutes);
 app.use("/payments", paymentRoutes);
 
-<<<<<<< HEAD
-// Russell - Auth & Customer
-const authRoutes = require("./routes/authRoutes");
-app.use("/api/auth", authRoutes);          // auth routes FIRST
-
-const customerRoutes = require("./routes/customerRoutes");
-app.use("/api", customerRoutes);           // customer routes after
-
-// Arri - Inspection
-=======
 // Russell - Customer
 const authRoutes = require("./routes/authRoutes");
 app.use("/api/auth", authRoutes);         
@@ -51,7 +33,6 @@ const customerRoutes = require("./routes/customerRoutes");
 app.use("/api", customerRoutes);           
 
 // Arri - Inspection 
->>>>>>> 3656f84c8d1fc4450d6748c2f3ca6b3f009afede
 const inspectionRoutes = require("./routes/inspection");
 app.use("/api/inspections", inspectionRoutes);
 
