@@ -26,10 +26,10 @@ app.use("/orders", orderRoutes);
 app.use("/payments", paymentRoutes);
 
 // Russell - Customer
-const authRoutes = require("./routes/authRoutes");
+const authRoutes = require("./russell_folders/routes/AuthRoutes");
 app.use("/api/auth", authRoutes);         
 
-const customerRoutes = require("./routes/customerRoutes");
+const customerRoutes = require("./russell_folders/routes/customerRoutes");
 app.use("/api", customerRoutes);           
 
 // Arri - Inspection 
