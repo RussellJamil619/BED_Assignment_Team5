@@ -35,6 +35,8 @@ app.use("/api", customerRoutes);
 // Arri - Inspection
 const inspectionRoutes = require("./routes/inspection");
 app.use("/api/inspections", inspectionRoutes);
+const hygieneGradeRoutes = require("./routes/hygieneGrade");
+app.use("/api/hygiene-grades", hygieneGradeRoutes);
 
 // ---------- Health-check route ----------
 app.get("/api", (req, res) => {
