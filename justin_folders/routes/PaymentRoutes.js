@@ -2,11 +2,11 @@
 
 const express = require("express");
 const router = express.Router();
-const paymentController = require("../justin_folders/controllers/PaymentController");
+const paymentController = require("../controllers/PaymentController");
 const {
   validateBody,
   updatePaymentSchema,
-} = require("../justin_folders/middlewares/ValidatePayment");
+} = require("../middlewares/ValidatePayment");
 const verifyToken = require("../middlewares/authMiddleware"); // TODO: re-enable when Russell's file is in
 router.use(verifyToken); // all payment routes require login
 
